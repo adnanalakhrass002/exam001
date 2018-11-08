@@ -17,10 +17,10 @@ class StackViewModel : NSObject {
     // MARK: - Methods
     
     
-}
+} 
 class CustomStack: UIStackView {
     private var stackAxis: NSLayoutConstraint.Axis?
-    private var stackDistribution: UIStackView.Distribution? 
+    private var stackDistribution: UIStackView.Distribution?
 }
 
 class SampleBtn: UIButton {
