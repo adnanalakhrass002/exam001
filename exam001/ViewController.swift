@@ -13,14 +13,40 @@ import UIKit
 class StackViewModel : NSObject {
     // MARK: - Attributes
     
-    
     // MARK: - Methods
     
     
-} 
+}
+
 class CustomStack: UIStackView {
     private var stackAxis: NSLayoutConstraint.Axis?
     private var stackDistribution: UIStackView.Distribution?
+    private var stackAlignment: UIStackView.Alignment?
+    private var stackSpacing: CGFloat?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    convenience init(sAxis: NSLayoutConstraint.Axis? = .vertical, sDist: UIStackView.Distribution, sAlignment: UIStackView.Alignment? = .center, sSpacing: CGFloat? = 15) {
+        self.init()
+        self.stackAxis = sAxis
+        self.stackDistribution = sDist
+        self.stackAlignment = sAlignment
+        self.stackSpacing = sSpacing
+        setupStack()
+    }
+    
+    func setupStack() {
+        self.axis = self.stackAxis!
+        self.distribution = self.stackDistribution!
+        self.alignment = self.stackAlignment!
+        self.spacing = self.stackSpacing!
+    }
 }
 
 class SampleBtn: UIButton {
@@ -41,7 +67,6 @@ class SampleBtn: UIButton {
         self.title = title
         self.color = color
         self.buttonAdds = buttonAdds
-        
         setup()
     }
     
@@ -55,6 +80,7 @@ class SampleBtn: UIButton {
 class ViewController: UIViewController {
     
     // MARK: - Properties
+    //task: make custom uitextfild classes with placeholder padding set to 10
     private var firstTextField: UITextField!
     private var secondTextField: UITextField!
     private var thirdTextField: UITextField!
@@ -142,21 +168,13 @@ class ViewController: UIViewController {
     }
     
     private func setupSubStack() {
-        subStack = UIStackView()
-        subStack.axis = .vertical
-        subStack.distribution = .fill
-        subStack.alignment = .center
-        subStack.spacing = 15
+        subStack = CustomStack(sAxis: .vertical, sDist: .fill, sAlignment: .center, sSpacing: 15)
         self.view.addSubview(subStack)
         setupSubstackConstraints()
     }
     
     private func setupStack() {
-        stack = UIStackView()
-        stack.axis = .vertical
-        stack.distribution = .equalSpacing
-        stack.alignment = .center
-        stack.spacing = 15
+        stack = CustomStack(sAxis: .vertical, sDist: .equalSpacing, sAlignment: .center)
         self.view.addSubview(stack)
         setupStackConstraints()
     }
@@ -203,6 +221,7 @@ class ViewController: UIViewController {
             thirdTextField.heightAnchor.constraint(equalToConstant: 50)
             ])
     }
+    
     private func setupFourthTFConstraints() {
         fourthTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
