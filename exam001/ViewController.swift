@@ -77,19 +77,62 @@ class SampleBtn: UIButton {
     }
 }
 
+class CustomTextField: UITextField {
+    private var fPlaceHolder: String?
+    private var fColor: UIColor?
+    private var fBorder: UITextField.BorderStyle?
+    private var xPadding:CGFloat?
+    private var yPadding: CGFloat?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    convenience init (fieldPlaceHolder: String, fieldColor: UIColor, fieldBorderStyle: UITextField.BorderStyle, xPad: CGFloat? = 10, ypad: CGFloat? = 10) {
+        self.init()
+        self.fPlaceHolder = fieldPlaceHolder
+        self.fColor = fieldColor
+        self.fBorder = fieldBorderStyle
+        self.xPadding = xPad
+        self.yPadding = ypad
+        setupField()
+    }
+    
+    func setupField() {
+        self.isUserInteractionEnabled = true
+        self.borderStyle = fBorder!
+        self.placeholder = fPlaceHolder!
+        self.backgroundColor = fColor!
+    }
+    
+    // placeholder position
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.insetBy(dx: xPadding!, dy: yPadding!)
+    }
+    
+    // text position
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.insetBy(dx: xPadding!, dy: yPadding!)
+    }
+}
+
 class ViewController: UIViewController {
     
     // MARK: - Properties
     //task: make custom uitextfild classes with placeholder padding set to 10
-    private var firstTextField: UITextField!
-    private var secondTextField: UITextField!
-    private var thirdTextField: UITextField!
-    private var fourthTextField: UITextField!
+    private var firstTextField: CustomTextField!
+    private var secondTextField: CustomTextField!
+    private var thirdTextField: CustomTextField!
+    private var fourthTextField: CustomTextField!
     private var topButton: SampleBtn!
-    private var bottomButton: UIButton!
+    private var bottomButton: SampleBtn!
     private var fillerView: UIView!
-    private var stack: UIStackView!
-    private var subStack: UIStackView!
+    private var stack: CustomStack!
+    private var subStack: CustomStack!
     
     // MARK: - ViewModel
     public var viewModel: StackViewModel!
@@ -123,25 +166,25 @@ class ViewController: UIViewController {
     }
     
     private func setupFirstTF() {
-        firstTextField = UITextField().setupField(placeHolder: "First field", Color: UIColor.purple)
+        firstTextField = CustomTextField(fieldPlaceHolder: "first field", fieldColor: .purple, fieldBorderStyle: .line)
         self.view.addSubview(firstTextField)
         setupFirstTFConstraints()
     }
     
     private func setupSecondTF() {
-        secondTextField = UITextField().setupField(placeHolder: "Second field", Color: UIColor.cyan)
+        secondTextField = CustomTextField(fieldPlaceHolder: "second field", fieldColor: .cyan, fieldBorderStyle: .line)
         self.view.addSubview(secondTextField)
         setupSecondTFConstraints()
     }
     
     private func setupThirdTF() {
-        thirdTextField = UITextField().setupField(placeHolder: "Third field", Color: UIColor.purple)
+        thirdTextField = CustomTextField(fieldPlaceHolder: "third field", fieldColor: .purple, fieldBorderStyle: .line, xPad: 10)
         self.view.addSubview(thirdTextField)
         setupThirdTFConstraints()
     }
     
     private func setupFourthTF() {
-        fourthTextField = UITextField().setupField(placeHolder: "Fourth field", Color: UIColor.cyan)
+        fourthTextField = CustomTextField(fieldPlaceHolder: "fourth field", fieldColor: .cyan, fieldBorderStyle: .line, ypad: 10)
         self.view.addSubview(fourthTextField)
         setupFourthTFConstraints()
     }
@@ -301,14 +344,14 @@ class ViewController: UIViewController {
     }
 }
 
-extension UITextField {
-    func setupField(placeHolder: String, Color: UIColor) -> UITextField {
-        let textfield = UITextField()
-        textfield.isUserInteractionEnabled = true
-        textfield.borderStyle = .line
-        textfield.placeholder = placeHolder
-        textfield.backgroundColor = Color
-        return textfield
-    }
-    
-}
+//extension UITextField {
+//    func setupField(placeHolder: String, Color: UIColor) -> UITextField {
+//        let textfield = UITextField()
+//        textfield.isUserInteractionEnabled = true
+//        textfield.borderStyle = .line
+//        textfield.placeholder = placeHolder
+//        textfield.backgroundColor = Color
+//        return textfield
+//    }
+//
+//}
