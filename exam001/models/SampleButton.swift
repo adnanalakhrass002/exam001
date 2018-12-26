@@ -32,10 +32,10 @@ class SampleButton: UIButton {
     }
     
     func setup() {
-        self.setTitle(title, for: .normal)
-        self.backgroundColor = color
-        self.isUserInteractionEnabled = true
-        self.setTitleColor(textColor, for: .normal)
+        setTitle(title, for: .normal)
+        backgroundColor = color
+        isUserInteractionEnabled = true
+        setTitleColor(textColor, for: .normal)
         
     }
     

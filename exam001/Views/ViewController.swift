@@ -25,23 +25,95 @@ struct Requestes {
     var items: String
 }
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, FireBaseModelDelegate {
+class ViewController: UIViewController {
 
     // MARK: - Properties
-    private var firstTextField: CustomTextField!
-    private var secondTextField: CustomTextField!
-    private var thirdTextField: CustomTextField!
-    private var fourthTextField: CustomTextField!
+    private lazy var firstTextField: CustomTextField = {
+        let textField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.first.rawValue], fieldColor: .orange, fieldBorderStyle: .line)
+        return textField
+    }()
+    
+    private lazy var secondTextField: CustomTextField! = {
+        let secondTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.second.rawValue], fieldColor: .orange, fieldBorderStyle: .line)
+        return secondTextField
+    }()
+
+    private lazy var thirdTextField: CustomTextField! = {
+        let thirdTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.third.rawValue], fieldColor: .orange, fieldBorderStyle: .line, xPad: 10)
+        return thirdTextField
+    }()
+    
+    private lazy var fourthTextField: CustomTextField! = {
+        let fourthTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.fourth.rawValue], fieldColor: .orange, fieldBorderStyle: .line, ypad: 10)
+        return fourthTextField
+    }()
+    
     private var topButton: SampleButton!
+    
     private var bottomButton: SampleButton!
-    private var submitButton: SampleButton!
-    private var fillerView: UIView!
-    private var stack: CustomStack!
-    private var subStack: CustomStack!
-    private var table: UITableView!
-    private var scrollView: UIScrollView!
-    private var containerView: UIView!
+    
+    private lazy var submitButton: SampleButton! = { [weak self] in
+        let submitButton = SampleButton(title: "Submit", color: .darkGray, buttonAdds: true)
+        submitButton.addTarget(self, action: #selector(submitBtnTapped), for: .touchUpInside)
+        submitButton.layer.cornerRadius = 20
+        submitButton.layer.borderWidth = 1
+        submitButton.layer.borderColor = UIColor.orange.cgColor
+        submitButton.clipsToBounds = true
+        return submitButton
+    }()
+    
+    private lazy var fillerView: UIView! = {
+        let fillerView = UIView()
+        fillerView.backgroundColor = .clear
+        return fillerView
+    }()
+    
+    private lazy var stack: CustomStack! = {
+        let stack = CustomStack(sAxis: .vertical, sDist: .equalSpacing, sAlignment: .center)
+        return stack
+    }()
+    
+    private lazy var subStack: CustomStack! = {
+        let subStack = CustomStack(sAxis: .vertical, sDist: .fill, sAlignment: .center, sSpacing: 15)
+        return subStack
+    }()
+    
+    private lazy var table: UITableView! = { [weak self] in
+//        guard let `self` = self else { return UITableView() } //use this if weak self causes an error in the block
+        let table = UITableView()
+        table.backgroundColor = .gray
+        table.register(DevCell.self, forCellReuseIdentifier: "DevCell")
+        table.dataSource = self
+        table.delegate = self
+        return table
+    }()
+    
+    private lazy var scrollView: UIScrollView! = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var containerView: UIView! = {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        return containerView
+    }()
+    
     private var cellcount: Int = 0
+    
+    enum Config {
+        static let heightAnchor: CGFloat = 50.0
+        static let firstTextFieldTopAnchor: CGFloat = 0.0
+        static let fourthTextFieldTopAnchor: CGFloat = 0.0
+        static let TopAnchor: CGFloat = 15.0
+        static let tableHeight: CGFloat = 400.0
+        static let tableBottomAnchor: CGFloat = -30.0
+        static let stackLeadingAnchor: CGFloat = 20.0
+        static let stackTrailingAnchor: CGFloat = 20.0
+        static let stackTopAnchor: CGFloat = 20.0
+        static let stackBottomAnchor: CGFloat = 20.0
+    }
     
     // MARK: - ViewModel
     public var fireBaseModel: fireBaseViewModel!
@@ -61,10 +133,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.barTintColor = UIColor.darkGray
-        self.title = "Home"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.orange]
-        
+        setupNavigationBar()
         fireBaseModel = fireBaseViewModel(self)
         viewModel = StackViewModel(self)
         setupViews()
@@ -82,8 +151,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     // MARK: - Setup Subviews
+    private func setupNavigationBar() {
+        navigationController?.navigationBar.barTintColor = .darkGray
+        self.title = "Home"
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.orange]
+    }
+    
     private func setupViews() {
-        view.backgroundColor = UIColor.darkGray
+        view.backgroundColor = .darkGray
         
         setupScrollView()
         setupStack()
@@ -103,12 +178,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     private func setupScrollView() {
         
-        scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
-        
-        containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(containerView)
         
 //        let lbl = UILabel()
@@ -157,26 +227,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     private func setupFirstTF() {
-        firstTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.first.rawValue], fieldColor: .orange, fieldBorderStyle: .line)
-        self.containerView.addSubview(firstTextField)
+        containerView.addSubview(firstTextField)
         setupFirstTFConstraints()
     }
     
     private func setupSecondTF() {
-        secondTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.second.rawValue], fieldColor: .orange, fieldBorderStyle: .line)
-        self.containerView.addSubview(secondTextField)
+        containerView.addSubview(secondTextField)
         setupSecondTFConstraints()
     }
     
     private func setupThirdTF() {
-        thirdTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.third.rawValue], fieldColor: .orange, fieldBorderStyle: .line, xPad: 10)
-        self.containerView.addSubview(thirdTextField)
+        containerView.addSubview(thirdTextField)
         setupThirdTFConstraints()
     }
     
     private func setupFourthTF() {
-        fourthTextField = CustomTextField(fieldPlaceHolder: viewModel.fieldsArray[textfieldIndex.fourth.rawValue], fieldColor: .orange, fieldBorderStyle: .line, ypad: 10)
-        self.containerView.addSubview(fourthTextField)
+        containerView.addSubview(fourthTextField)
         setupFourthTFConstraints()
     }
     
@@ -203,40 +269,27 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 //    }
     
     private func setupSubmitBtn() {
-        submitButton = SampleButton(title: "Submit", color: .darkGray, buttonAdds: true)
-        submitButton.addTarget(self, action: #selector(submitBtnTapped), for: .touchUpInside)
-        submitButton.layer.cornerRadius = 20
-        submitButton.layer.borderWidth = 1
-        submitButton.layer.borderColor = UIColor.orange.cgColor
-        submitButton.clipsToBounds = true
-        self.containerView.addSubview(submitButton)
+        containerView.addSubview(submitButton)
         setupSubmitBtnConstraint()
     }
     
     private func setupTableView() {
-        table = UITableView()
-        table.backgroundColor = UIColor.gray
-        table.register(DevCell.self, forCellReuseIdentifier: "DevCell")
-        self.containerView.addSubview(table)
+        containerView.addSubview(table)
         setupTableViewConstraints()
     }
     
     private func setupFillerView() {
-        fillerView = UIView()
-        fillerView.backgroundColor = UIColor.clear
-        self.containerView.addSubview(fillerView)
+        containerView.addSubview(fillerView)
         setupFillerViewConstraints()
     }
     
     private func setupSubStack() {
-        subStack = CustomStack(sAxis: .vertical, sDist: .fill, sAlignment: .center, sSpacing: 15)
-        self.containerView.addSubview(subStack)
+        containerView.addSubview(subStack)
         setupSubstackConstraints()
     }
     
     private func setupStack() {
-        stack = CustomStack(sAxis: .vertical, sDist: .equalSpacing, sAlignment: .center)
-        self.containerView.addSubview(stack)
+        containerView.addSubview(stack)
         setupStackConstraints()
     }
     
@@ -262,8 +315,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             firstTextField.rightAnchor.constraint(equalTo: subStack.rightAnchor),
             firstTextField.leftAnchor.constraint(equalTo: subStack.leftAnchor),
-            firstTextField.topAnchor.constraint(equalTo: subStack.topAnchor, constant: 0),
-            firstTextField.heightAnchor.constraint(equalToConstant: 50)
+            firstTextField.topAnchor.constraint(equalTo: subStack.topAnchor, constant: Config.firstTextFieldTopAnchor),
+            firstTextField.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -272,7 +325,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             secondTextField.rightAnchor.constraint(equalTo: subStack.rightAnchor),
             secondTextField.leftAnchor.constraint(equalTo: subStack.leftAnchor),
-            secondTextField.heightAnchor.constraint(equalToConstant: 50)
+            secondTextField.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -281,7 +334,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             thirdTextField.rightAnchor.constraint(equalTo: subStack.rightAnchor),
             thirdTextField.leftAnchor.constraint(equalTo: subStack.leftAnchor),
-            thirdTextField.heightAnchor.constraint(equalToConstant: 50)
+            thirdTextField.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -290,8 +343,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             fourthTextField.rightAnchor.constraint(equalTo: subStack.rightAnchor),
             fourthTextField.leftAnchor.constraint(equalTo: subStack.leftAnchor),
-            fourthTextField.bottomAnchor.constraint(equalTo: subStack.bottomAnchor, constant: 0),
-            fourthTextField.heightAnchor.constraint(equalToConstant: 50)
+            fourthTextField.bottomAnchor.constraint(equalTo: subStack.bottomAnchor, constant: Config.fourthTextFieldTopAnchor),
+            fourthTextField.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -300,8 +353,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             topButton.rightAnchor.constraint(equalTo: stack.rightAnchor),
             topButton.leftAnchor.constraint(equalTo: stack.leftAnchor),
-            topButton.topAnchor.constraint(equalTo: subStack.bottomAnchor, constant: 15),
-            topButton.heightAnchor.constraint(equalToConstant: 50)
+            topButton.topAnchor.constraint(equalTo: subStack.bottomAnchor, constant: Config.TopAnchor),
+            topButton.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -310,8 +363,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             bottomButton.rightAnchor.constraint(equalTo: stack.rightAnchor),
             bottomButton.leftAnchor.constraint(equalTo: stack.leftAnchor),
-            bottomButton.topAnchor.constraint(equalTo: topButton.bottomAnchor, constant: 15),
-            bottomButton.heightAnchor.constraint(equalToConstant: 50)
+            bottomButton.topAnchor.constraint(equalTo: topButton.bottomAnchor, constant: Config.TopAnchor),
+            bottomButton.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -320,8 +373,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             submitButton.rightAnchor.constraint(equalTo: stack.rightAnchor),
             submitButton.leftAnchor.constraint(equalTo: stack.leftAnchor),
-            submitButton.topAnchor.constraint(equalTo: subStack.bottomAnchor, constant: 15),
-            submitButton.heightAnchor.constraint(equalToConstant: 50)
+            submitButton.topAnchor.constraint(equalTo: subStack.bottomAnchor, constant: Config.TopAnchor),
+            submitButton.heightAnchor.constraint(equalToConstant: Config.heightAnchor)
             ])
     }
     
@@ -330,10 +383,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             table.rightAnchor.constraint(equalTo: stack.rightAnchor),
             table.leftAnchor.constraint(equalTo: stack.leftAnchor),
-            table.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: 15),
-//            table.heightAnchor.constraint(equalToConstant: 500)
-            table.heightAnchor.constraint(greaterThanOrEqualToConstant: 400),
-            table.bottomAnchor.constraint(equalTo: stack.bottomAnchor, constant: -30)
+            table.topAnchor.constraint(equalTo: submitButton.bottomAnchor, constant: Config.TopAnchor),
+            table.heightAnchor.constraint(greaterThanOrEqualToConstant: Config.tableHeight),
+            table.bottomAnchor.constraint(equalTo: stack.bottomAnchor, constant: Config.tableBottomAnchor)
             ])
     }
     
@@ -342,7 +394,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         NSLayoutConstraint.activate([
             fillerView.rightAnchor.constraint(equalTo: stack.rightAnchor),
             fillerView.leftAnchor.constraint(equalTo: stack.leftAnchor),
-            fillerView.topAnchor.constraint(equalTo: table.bottomAnchor, constant: 15),
+            fillerView.topAnchor.constraint(equalTo: table.bottomAnchor, constant: Config.TopAnchor),
             fillerView.bottomAnchor.constraint(equalTo: stack.bottomAnchor)
             ])
     }
@@ -350,11 +402,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     private func setupStackConstraints() {
         stack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            stack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            stack.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Config.stackLeadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Config.stackTrailingAnchor),
+            stack.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: Config.stackTopAnchor),
 //            stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20)
-            stack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 20), // should be added on last item inside the container
+            stack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: Config.stackBottomAnchor), // should be added on last item inside the container
             ])
     }
     
@@ -366,6 +418,41 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             ])
     }
     
+}
+
+extension ViewController: ViewModelDelegate {
+    func didAddData(_ index: Int) {
+        
+    }
+    
+    // ViewModel Delegates
+    func didUpdateData() {
+        print("did update")
+        }
+    
+    func loadData(_ offset: Int, _ limit: Int) {
+        self.fireBaseModel.getCellDataFromFirebase(offset, limit, completion: { (success) in
+            self.table.reloadData()
+        })
+    }
+}
+
+//refresh data when scroll hits last cell
+extension ViewController: UIScrollViewDelegate {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if scrollView == table {
+            if table.visibleCells.count > 0 {
+                let lastVisibleCell = table.visibleCells[table.visibleCells.count-1] as! DevCell
+                if lastVisibleCell.cellIndex == fireBaseModel.tableCellDataArray.count - 1 {
+                    loadData(fireBaseModel.tableCellDataArray.count, 13)
+                }
+            }
+        }
+    }
+}
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    
     // MARK: - tablview
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return fireBaseModel.getTableDatasize()
@@ -376,11 +463,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.cellIndex = indexPath.row
         let singleCellData: NSDictionary = fireBaseModel.getTableData(indexPath.row)
         let location = singleCellData[self.viewModel.fieldsArray[3]] as? String ?? ""
-        let stat = singleCellData["Status"] as? String ?? ""
+        let status = singleCellData["Status"] as? String ?? ""
         cell.textLabel!.text = location
-        cell.detailTextLabel?.text = stat
-        cell.textLabel?.textColor = UIColor.orange
-        cell.backgroundColor = UIColor.darkGray
+        cell.detailTextLabel?.text = status
+        cell.textLabel?.textColor = .orange
+        cell.backgroundColor = .darkGray
         
         
         return cell
@@ -390,10 +477,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("Num: \(indexPath.row)")
         print(fireBaseModel.tableCellDataArray[indexPath.row] as Any)
         if let dictv = fireBaseModel.tableCellDataArray[indexPath.row] {
-            firstTextField.text = dictv[self.viewModel.fieldsArray[0]] as? String
-            secondTextField.text = dictv[self.viewModel.fieldsArray[1]] as? String
-            thirdTextField.text = dictv[self.viewModel.fieldsArray[2]] as? String
-            fourthTextField.text = dictv[self.viewModel.fieldsArray[3]] as? String
+            guard let firstElement = dictv[viewModel.fieldsArray[0]] as? String,
+                  let secondElement = dictv[viewModel.fieldsArray[1]] as? String,
+                  let thirdElement = dictv[viewModel.fieldsArray[2]] as? String,
+                  let fourthElement = dictv[viewModel.fieldsArray[3]] as? String else {
+                return
+            }
+            
+            firstTextField.text = firstElement
+            secondTextField.text = secondElement
+            thirdTextField.text = thirdElement
+            fourthTextField.text = fourthElement
         }
         if let navigationController = self.navigationController {
             print("T##items: Any...##Any")
@@ -402,11 +496,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let detailViewController = RequestDetailsViewController(fireBaseModel.tableCellDataArray[indexPath.row] as! NSDictionary,indexPath.row)
             navigationController.pushViewController(detailViewController, animated: true)
         }
-//        let vc = RequestDetailsViewController()
-//        self.present(vc, animated: true, completion: nil)
-
+        //        let vc = RequestDetailsViewController()
+        //        self.present(vc, animated: true, completion: nil)
+        
     }
-    
+}
+
+extension ViewController {
     // MARK: - Actions
     @objc func topBtnTapped() {
         UIView.animate(withDuration: 2.0, animations: {
@@ -427,12 +523,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     @objc func submitBtnTapped() {
-        if (firstTextField.text?.isEmpty)! || (secondTextField.text?.isEmpty)! || (thirdTextField.text?.isEmpty)! || (fourthTextField.text?.isEmpty)! {
-            let alert = UIAlertController(title: "Oops", message: "You missed a field!", preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(UIAlertAction(title: "Let me check", style: UIAlertAction.Style.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-        } else {
-        let entry = Requestes(fullName: firstTextField.text!, floor: secondTextField.text!, location: thirdTextField.text!, items: fourthTextField.text!)
+        
+        guard let firstField = firstTextField.text,
+            let secondField = secondTextField.text,
+            let thirdField = thirdTextField.text,
+            let fourthField = fourthTextField.text else {
+                let alert = UIAlertController()
+                alert.title = "Blank field"
+                alert.message = "please fill all fields"
+                alert.present(alert, animated: true, completion: nil)
+                return
+        }
+            let entry = Requestes(fullName: firstField, floor: secondField, location: thirdField, items: fourthField)
             fireBaseModel.appendNewEntry(entry,  completion: { (success) in
                 self.firstTextField.text = ""
                 self.secondTextField.text = ""
@@ -443,40 +545,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 alert.addAction(UIAlertAction(title: "Close", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             })
-        }
-    }
-    
-}
-
-extension ViewController: ViewModelDelegate {
-    func didAddData(_ index: Int) {
         
     }
-    
-    // ViewModel Delegates
-    func didUpdateData() {
-        print("did update")
-        }
-    
-    func loadData(_ offset: Int, _ limit: Int) {
-        table.dataSource = self
-        table.delegate = self
-        self.fireBaseModel.getCellDataFromFirebase(offset, limit, completion: { (success) in
-            self.table.reloadData()
-        })
-    }
 }
 
-//refresh data when scroll hits last cell
-extension ViewController: UIScrollViewDelegate {
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView == table {
-            if table.visibleCells.count > 0 {
-                let lastVisibleCell = table.visibleCells[table.visibleCells.count-1] as! DevCell
-                if lastVisibleCell.cellIndex == fireBaseModel.tableCellDataArray.count - 1 {
-                    loadData(fireBaseModel.tableCellDataArray.count, 13)
-                }
-            }
-        }
-    }
+extension ViewController: FireBaseModelDelegate {
+    
 }

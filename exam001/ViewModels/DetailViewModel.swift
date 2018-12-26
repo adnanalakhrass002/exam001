@@ -11,7 +11,7 @@ import Firebase
 
 class DetailViewModel: NSObject {
     
-    public var ref : DatabaseReference!
+    public var reference : DatabaseReference!
     weak var delegate: DetailModelDelegate?
     public var requestID: Int?
     public var requestPublisher: String?
@@ -28,12 +28,12 @@ class DetailViewModel: NSObject {
         requestLocation = location
         requestFloor = floor
         requestItems = items
-        ref = Database.database().reference()
+        reference = Database.database().reference()
     }
     
     init(_ delegate: DetailModelDelegate) {
         self.delegate = delegate
-        ref = Database.database().reference()
+        reference = Database.database().reference()
     }
     
     override init() {
@@ -45,7 +45,7 @@ class DetailViewModel: NSObject {
 extension DetailViewModel {
     public func buttonPressed() {
         requestStatus = "Taken"
-        self.ref.child("Requests").child(String(requestID!)).child("Status").setValue(requestStatus as! String)
+        reference.child("Requests").child(String(requestID!)).child("Status").setValue(requestStatus as! String)
     }
 }
 

@@ -10,83 +10,124 @@ import UIKit
 import Firebase
 import FirebaseAuth
 
-class LoginViewController: UIViewController, FireBaseModelDelegate {
+class LoginViewController: UIViewController {
 
-    private var firstTextField: CustomTextField!
-    private var secondTextField: CustomTextField!
-    private var Button: SampleButton!
-    private var fireBaseModel: fireBaseViewModel!
-
-    public convenience init(_ fireviewModel: fireBaseViewModel) {
-        self.init()
-        self.fireBaseModel = fireviewModel
+    enum Config {
+        static let subViewHorizontalAnchor: CGFloat = 20.0
+        static let secondTextfieldBottomAnchor: CGFloat = 20.0
+        static let buttonTopAnchor: CGFloat = 50.0
+        static let alamoButtonTopAnchor: CGFloat = 20.0
     }
-
+    
+    private lazy var firstTextField: CustomTextField! = {
+        let firstTextField = CustomTextField(fieldPlaceHolder: "User Name OR request type (post/get/delete/json)", fieldColor: .orange, fieldBorderStyle: .line)
+        return firstTextField
+    }()
+    
+    private lazy var secondTextField: CustomTextField! = {
+        let secondTextField = CustomTextField(fieldPlaceHolder: "Password", fieldColor: .orange, fieldBorderStyle: .line)
+        secondTextField.isSecureTextEntry = true
+        return secondTextField
+    }()
+    
+    private lazy var Button: SampleButton! = {
+        let Button = SampleButton(title: "Sign In", buttonAdds: true)
+        Button.addTarget(self, action: #selector(Login), for: .touchUpInside)
+        Button.layer.cornerRadius = 20
+        Button.layer.borderWidth = 1
+        Button.layer.borderColor = UIColor.orange.cgColor
+        Button.clipsToBounds = true
+        return Button
+    }()
+    
+    private lazy var alamoButton: SampleButton! = {
+        let alamoButton = SampleButton(title: "Request", buttonAdds: true)
+        alamoButton.addTarget(self, action: #selector(Request), for: .touchUpInside)
+        alamoButton.layer.cornerRadius = 20
+        alamoButton.layer.borderWidth = 1
+        alamoButton.layer.borderColor = UIColor.orange.cgColor
+        alamoButton.clipsToBounds = true
+        return alamoButton
+    }()
+    
+    private var fireBaseModel: fireBaseViewModel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.darkGray
         setupSubViews()
         fireBaseModel = fireBaseViewModel(self)
     }
-
+    
     func setupSubViews() {
+        view.backgroundColor = .darkGray
+        
         setupFirstTextField()
         setupSecondTextField()
         setupButton()
+        setupAlamoButton()
     }
 
     func setupFirstTextField() {
-        firstTextField = CustomTextField(fieldPlaceHolder: "User Name", fieldColor: .orange, fieldBorderStyle: .line)
         view.addSubview(firstTextField)
         seupFirstFieldConstraints()
         
     }
 
     func setupSecondTextField() {
-        secondTextField = CustomTextField(fieldPlaceHolder: "Password", fieldColor: .orange, fieldBorderStyle: .line)
-        secondTextField.isSecureTextEntry = true
         view.addSubview(secondTextField)
         setupSecondFieldConstraints()
     }
 
     func setupButton() {
-        Button = SampleButton(title: "Sign In", buttonAdds: true)
-        Button.addTarget(self, action: #selector(Login), for: .touchUpInside)
-        Button.layer.cornerRadius = 20
-        Button.layer.borderWidth = 1
-        Button.layer.borderColor = UIColor.orange.cgColor
-        Button.clipsToBounds = true
         view.addSubview(Button)
         setupButtonConstraints()
+    }
+    
+    func setupAlamoButton() {
+        view.addSubview(alamoButton)
+        setupAlamoButtonConstraints()
     }
 
     func seupFirstFieldConstraints() {
         firstTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             firstTextField.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
-            firstTextField.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20),
-            firstTextField.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20)
+            firstTextField.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -Config.subViewHorizontalAnchor),
+            firstTextField.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: Config.subViewHorizontalAnchor)
             ])
     }
 
     func setupSecondFieldConstraints() {
         secondTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            secondTextField.topAnchor.constraint(equalTo: firstTextField.bottomAnchor,constant: 20),
-            secondTextField.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 20),
-            secondTextField.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -20)
+            secondTextField.topAnchor.constraint(equalTo: firstTextField.bottomAnchor,constant: Config.secondTextfieldBottomAnchor),
+            secondTextField.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: Config.subViewHorizontalAnchor),
+            secondTextField.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -Config.subViewHorizontalAnchor)
             ])
     }
 
     func setupButtonConstraints() {
         Button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            Button.topAnchor.constraint(equalTo: secondTextField.bottomAnchor, constant: 50),
-            Button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            Button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20)
+            Button.topAnchor.constraint(equalTo: secondTextField.bottomAnchor, constant: Config.buttonTopAnchor),
+            Button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Config.subViewHorizontalAnchor),
+            Button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Config.subViewHorizontalAnchor)
             ])
     }
     
+    func setupAlamoButtonConstraints() {
+        alamoButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            alamoButton.topAnchor.constraint(equalTo: Button.bottomAnchor, constant: Config.alamoButtonTopAnchor),
+            alamoButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Config.subViewHorizontalAnchor),
+            alamoButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Config.subViewHorizontalAnchor)
+            ])
+    }
+    
+}
+
+extension LoginViewController {
+    // MARK: - Actions
     @objc func Login() {
         print("login tapped")
         Auth.auth().signIn(withEmail: firstTextField.text!, password: secondTextField.text!) { (user, error) in
@@ -123,5 +164,23 @@ class LoginViewController: UIViewController, FireBaseModelDelegate {
             }
         }
     }
+    
+    @objc func Request() {
+        if firstTextField.text != nil {
+            fireBaseModel.performRequest(firstTextField.text!)
+        }
+        else {
+            print("no request value entered")
+        }
+    }
+}
+
+extension LoginViewController: FireBaseModelDelegate {
+    
+    public convenience init(_ fireviewModel: fireBaseViewModel) {
+        self.init()
+        self.fireBaseModel = fireviewModel
+    }
+
     
 }

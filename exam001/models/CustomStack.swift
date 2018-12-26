@@ -20,7 +20,6 @@ class CustomStack: UIStackView {
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-        //what is this?
     }
     
     convenience init(sAxis: NSLayoutConstraint.Axis? = .vertical, sDist: UIStackView.Distribution, sAlignment: UIStackView.Alignment? = .center, sSpacing: CGFloat? = 15) {
