@@ -10,7 +10,7 @@
 
 import UIKit
 import Firebase
-
+   
 enum textfieldIndex: Int {
     case first
     case second
@@ -18,11 +18,20 @@ enum textfieldIndex: Int {
     case fourth
 }
 
+// Adnan: Always use initializers to pass data
+// Data retrieved from API might sometimes contain nil value, so we use optionals to avoid possible crashes.
 struct Requestes {
     var fullName: String
     var floor: String
     var location: String
     var items: String
+    
+    public init(_ fullname: String,_ floor: String,_ location: String,_ items: String) {
+        self.fullName = fullname
+        self.floor = floor
+        self.location = location
+        self.items = items
+    }
 }
 
 class ViewController: UIViewController {
@@ -52,7 +61,7 @@ class ViewController: UIViewController {
     
     private var bottomButton: SampleButton!
     
-    private lazy var submitButton: SampleButton! = { [weak self] in
+    private lazy var submitButton: SampleButton = { [weak self] in
         let submitButton = SampleButton(title: "Submit", color: .darkGray, buttonAdds: true)
         submitButton.addTarget(self, action: #selector(submitBtnTapped), for: .touchUpInside)
         submitButton.layer.cornerRadius = 20
@@ -62,21 +71,24 @@ class ViewController: UIViewController {
         return submitButton
     }()
     
-    private lazy var fillerView: UIView! = {
+    private lazy var fillerView: UIView = {
         let fillerView = UIView()
         fillerView.backgroundColor = .clear
         return fillerView
     }()
     
-    private lazy var stack: CustomStack! = {
-        let stack = CustomStack(sAxis: .vertical, sDist: .equalSpacing, sAlignment: .center)
-        return stack
+    private lazy var stack: CustomStack = {
+        return createStackViewWithDistribution(.equalSpacing, andSpacing: 15.0)
     }()
     
-    private lazy var subStack: CustomStack! = {
-        let subStack = CustomStack(sAxis: .vertical, sDist: .fill, sAlignment: .center, sSpacing: 15)
-        return subStack
+    private lazy var subStack: CustomStack = {
+        return createStackViewWithDistribution(.fill, andSpacing: 15.0)
     }()
+    
+    // ADNAN: -
+    private func createStackViewWithDistribution(_ dist: UIStackView.Distribution, andSpacing spacing: CGFloat) -> CustomStack {
+        return CustomStack(axis: .vertical, distribution: dist, alignment: .center, spacing: spacing)
+    }
     
     private lazy var table: UITableView! = { [weak self] in
 //        guard let `self` = self else { return UITableView() } //use this if weak self causes an error in the block
@@ -109,10 +121,7 @@ class ViewController: UIViewController {
         static let TopAnchor: CGFloat = 15.0
         static let tableHeight: CGFloat = 400.0
         static let tableBottomAnchor: CGFloat = -30.0
-        static let stackLeadingAnchor: CGFloat = 20.0
-        static let stackTrailingAnchor: CGFloat = 20.0
-        static let stackTopAnchor: CGFloat = 20.0
-        static let stackBottomAnchor: CGFloat = 20.0
+        static let stackPadding: CGFloat = 20.0
     }
     
     // MARK: - ViewModel
@@ -123,6 +132,7 @@ class ViewController: UIViewController {
     public convenience init(_ viewModel: StackViewModel) {
         self.init()
         self.viewModel = viewModel
+        self.viewModel.stackViewModelDelegate = self
     }
     
     public convenience init(_ fireviewModel: fireBaseViewModel) {
@@ -152,9 +162,10 @@ class ViewController: UIViewController {
     
     // MARK: - Setup Subviews
     private func setupNavigationBar() {
-        navigationController?.navigationBar.barTintColor = .darkGray
+        guard let navigationController = navigationController else { return }
+        navigationController.navigationBar.barTintColor = .darkGray
         self.title = "Home"
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.orange]
+        navigationController.navigationBar.titleTextAttributes = [.foregroundColor: UIColor.orange]
     }
     
     private func setupViews() {
@@ -402,11 +413,10 @@ class ViewController: UIViewController {
     private func setupStackConstraints() {
         stack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Config.stackLeadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Config.stackTrailingAnchor),
-            stack.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: Config.stackTopAnchor),
-//            stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 20)
-            stack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: Config.stackBottomAnchor), // should be added on last item inside the container
+            stack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Config.stackPadding),
+            stack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Config.stackPadding),
+            stack.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: Config.stackPadding),
+            stack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: Config.stackPadding), // should be added on last item inside the container
             ])
     }
     
@@ -421,14 +431,13 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: ViewModelDelegate {
-    func didAddData(_ index: Int) {
-        
+    func viewControllerDidUpdateData(_ viewController: ViewController) {
+        print("did update")
     }
     
-    // ViewModel Delegates
-    func didUpdateData() {
-        print("did update")
-        }
+    func viewController(_ viewController: ViewController, didAddDataAt index: Int) {
+        
+    }
     
     func loadData(_ offset: Int, _ limit: Int) {
         self.fireBaseModel.getCellDataFromFirebase(offset, limit, completion: { (success) in
@@ -442,9 +451,10 @@ extension ViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if scrollView == table {
             if table.visibleCells.count > 0 {
-                let lastVisibleCell = table.visibleCells[table.visibleCells.count-1] as! DevCell
-                if lastVisibleCell.cellIndex == fireBaseModel.tableCellDataArray.count - 1 {
-                    loadData(fireBaseModel.tableCellDataArray.count, 13)
+                if let lastVisibleCell = table.visibleCells[table.visibleCells.count-1] as? DevCell {
+                    if lastVisibleCell.cellIndex == fireBaseModel.tableCellDataArray.count - 1 {
+                        loadData(fireBaseModel.tableCellDataArray.count, 13)
+                    }
                 }
             }
         }
@@ -489,11 +499,14 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             thirdTextField.text = thirdElement
             fourthTextField.text = fourthElement
         }
-        if let navigationController = self.navigationController {
+        if let navigationController = navigationController {
             print("T##items: Any...##Any")
             print(indexPath.row)
             print("T##items: Any...##Any")
-            let detailViewController = RequestDetailsViewController(fireBaseModel.tableCellDataArray[indexPath.row] as! NSDictionary,indexPath.row)
+            guard let cellData = fireBaseModel.tableCellDataArray[indexPath.row] else { return }
+            let userRequest = UserRequest(with: indexPath.row, andDictionary: cellData)
+            let detailsViewModel = DetailViewModel(withUserRequest: userRequest)
+            let detailViewController = RequestDetailsViewController(detailsViewModel)
             navigationController.pushViewController(detailViewController, animated: true)
         }
         //        let vc = RequestDetailsViewController()
@@ -505,11 +518,12 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 extension ViewController {
     // MARK: - Actions
     @objc func topBtnTapped() {
-        UIView.animate(withDuration: 2.0, animations: {
+        UIView.animate(withDuration: 2.0) { [weak self] in
+            guard let `self` = self else { return }
             self.subStack.removeArrangedSubview(self.secondTextField)
             self.subStack.removeArrangedSubview(self.fourthTextField)
             self.containerView.layoutIfNeeded()
-        })
+        }
         
     }
     
@@ -534,7 +548,7 @@ extension ViewController {
                 alert.present(alert, animated: true, completion: nil)
                 return
         }
-            let entry = Requestes(fullName: firstField, floor: secondField, location: thirdField, items: fourthField)
+        let entry = Requestes(firstField, secondField, thirdField, fourthField)
             fireBaseModel.appendNewEntry(entry,  completion: { (success) in
                 self.firstTextField.text = ""
                 self.secondTextField.text = ""
@@ -550,5 +564,21 @@ extension ViewController {
 }
 
 extension ViewController: FireBaseModelDelegate {
+    
+}
+
+extension ViewController: StackViewModelDelegate {
+    func stackViewModelDidSetDataSourceArray(_ stackViewModel: StackViewModel) {
+        //update ui exactly like tableview delegate
+    }
+    
+    func stackViewModelDidSetTableContentArray(_ stackViewModel: StackViewModel) {
+        
+    }
+    
+    func stackViewModelDidSetDataArray(_ stackViewModel: StackViewModel) {
+        
+    }
+    
     
 }

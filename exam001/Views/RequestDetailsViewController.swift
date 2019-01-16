@@ -10,13 +10,6 @@ import UIKit
 
 class RequestDetailsViewController: UIViewController {
     
-    public var requestID: Int?
-    public var requestPublisher: String?
-    public var requestItems: String?
-    public var requestStatus: String?
-    public var requestFloor: String?
-    public var requestLocation: String?
-    
     private lazy var scrollView: UIScrollView! = {
         let scrollView = UIScrollView()
         return scrollView
@@ -47,9 +40,11 @@ class RequestDetailsViewController: UIViewController {
     private lazy var statusLabel: UILabel! = {
         let statusLabel = UILabel()
         statusLabel.font = UIFont.boldSystemFont(ofSize: 40.0)
-        statusLabel.text = detailVM?.requestStatus!
         statusLabel.textAlignment = .center
         statusLabel.textColor = .orange
+        guard let detailVM = detailViewModel,
+              let userRequest = detailVM.userRequest else { return statusLabel}
+        statusLabel.text = userRequest.status
         return statusLabel
     }()
     
@@ -70,9 +65,11 @@ class RequestDetailsViewController: UIViewController {
     private lazy var locationLabel: UILabel! = {
         let locationLabel = UILabel()
         locationLabel.font = UIFont.boldSystemFont(ofSize: 25.0)
-        locationLabel.text = detailVM?.requestLocation!
         locationLabel.textAlignment = .center
         locationLabel.textColor = .orange
+        guard let detailVM = detailViewModel,
+              let userRequest = detailVM.userRequest else { return locationLabel}
+        locationLabel.text = userRequest.location
         return locationLabel
     }()
     
@@ -86,22 +83,28 @@ class RequestDetailsViewController: UIViewController {
     private lazy var nameAndFloorLabel: UILabel! = {
         let nameAndFloorLabel = UILabel()
         nameAndFloorLabel.font = UIFont.boldSystemFont(ofSize: 25.0)
-        nameAndFloorLabel.text = (detailVM?.requestPublisher)! + " On Floor: " + (detailVM?.requestFloor)!
         nameAndFloorLabel.textAlignment = .center
         nameAndFloorLabel.textColor = .orange
+        guard let detailVM = detailViewModel,
+              let userRequest = detailVM.userRequest,
+              let publisher = userRequest.publisher,
+              let floor = userRequest.floor else { return nameAndFloorLabel}
+        nameAndFloorLabel.text = publisher + " On Floor: " + floor
         return nameAndFloorLabel
     }()
     
     private lazy var itemsLabel: UILabel! = {
         let itemsLabel = UILabel()
         itemsLabel.font = UIFont.boldSystemFont(ofSize: 25.0)
-        itemsLabel.text = detailVM?.requestItems!
         itemsLabel.textAlignment = .center
         itemsLabel.textColor = .orange
+        guard let detailVM = detailViewModel,
+              let userRequest = detailVM.userRequest else { return itemsLabel}
+        itemsLabel.text = userRequest.items
         return itemsLabel
     }()
     
-    private var detailVM: DetailViewModel?
+    private var detailViewModel: DetailViewModel?
     
     enum Config {
         static let scrollViewTopAnchor: CGFloat = 0.0
@@ -114,25 +117,17 @@ class RequestDetailsViewController: UIViewController {
         static let labelTopAnchor: CGFloat = 20.0
         static let fillerViewTopAnchor: CGFloat = 15.0
     }
-
-    convenience init(_ selectedCellContent: NSDictionary,_ id: Int) {
-        self.init()
-        
-        requestID = id
-        requestPublisher = selectedCellContent.value(forKey: "Full name") as? String
-        requestFloor = (selectedCellContent.value(forKey: "floor") as! String)
-        requestItems = (selectedCellContent.value(forKey: "what do you want?") as! String)
-        requestStatus = (selectedCellContent.value(forKey: "Status") as! String)
-        requestLocation = (selectedCellContent.value(forKey: "where do you want items from?") as! String)
-    }
+    
     public convenience init(_ viewModel: DetailViewModel) {
         self.init()
-        detailVM = viewModel
+        detailViewModel = viewModel
+        
+        guard let detailVM = detailViewModel else { return }
+        detailVM.delegate = self
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        detailVM = DetailViewModel(self.requestID!,self.requestPublisher!,self.requestItems!,self.requestStatus!,self.requestFloor!,self.requestLocation!)
         setupviews()
     }
     
@@ -140,7 +135,6 @@ class RequestDetailsViewController: UIViewController {
         view.tintColor = .orange
         self.navigationController?.navigationBar.tintColor = .orange
         view.backgroundColor = .darkGray
-
         setupbutton()
         setupScrollView()
         setupStatusLabel()
@@ -161,7 +155,6 @@ class RequestDetailsViewController: UIViewController {
     private func setupScrollView() {
         view.addSubview(scrollView)
         scrollView.addSubview(containerView)
-        
         setupScrollViewConstraints()
     }
     
@@ -308,26 +301,25 @@ class RequestDetailsViewController: UIViewController {
     
 }
 
-extension RequestDetailsViewController: DetailModelDelegate {
+extension RequestDetailsViewController: DetailsViewControllerViewModelDelegate {
     
-    func checkStatus() {
-        requestStatus = "Taken"
-        if detailVM!.requestStatus != "Available" {
-            button.isEnabled = false
-            button.alpha = 0.5
-            button.titleLabel?.text = "Taken"
-        } else {
-            button.isEnabled = true
-            button.alpha = 1.0
-            button.titleLabel?.text = "Take"
-        }
+    private func checkStatus() {
+        //userRequest.status = "Taken" // should be added as viewmodel method to set status // adnan
+        guard let detailVM = detailViewModel,
+              let userRequest = detailVM.userRequest else { return }
+        button.isEnabled = (userRequest.status != "Available" ? false : true) // (Adnan: condition ? trueState : falseState)
+        button.alpha = (userRequest.status != "Available" ? 0.5 : 1.0)
+        guard let titleLabel = button.titleLabel else { return }
+        titleLabel.text = (userRequest.status != "Available" ? "Taken" : "Take")
     }
+    
 }
 
 extension RequestDetailsViewController {
     
     @objc func ButtonTapped() {
-        detailVM?.buttonPressed()
+        guard let detailVM = detailViewModel else { return }
+        detailVM.buttonPressed()
         checkStatus()
     }
     

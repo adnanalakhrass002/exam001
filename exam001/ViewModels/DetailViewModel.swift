@@ -9,43 +9,26 @@
 import UIKit
 import Firebase
 
+
 class DetailViewModel: NSObject {
     
-    public var reference : DatabaseReference!
-    weak var delegate: DetailModelDelegate?
-    public var requestID: Int?
-    public var requestPublisher: String?
-    public var requestItems: String?
-    public var requestStatus: String?
-    public var requestFloor: String?
-    public var requestLocation: String?
+    private var reference: DatabaseReference!
+    public var userRequest: UserRequest?
+    public weak var delegate: DetailsViewControllerViewModelDelegate?
     
-    public convenience init(_ id: Int ,_ name: String,_ items: String,_ status: String,_ floor:String,_ location: String) {
+    convenience init(withUserRequest userRequest: UserRequest) {
         self.init()
-        requestID = id
-        requestPublisher = name
-        requestStatus = status
-        requestLocation = location
-        requestFloor = floor
-        requestItems = items
+        self.userRequest = userRequest
         reference = Database.database().reference()
     }
-    
-    init(_ delegate: DetailModelDelegate) {
-        self.delegate = delegate
-        reference = Database.database().reference()
-    }
-    
-    override init() {
-        
-    }
-    
 }
 
 extension DetailViewModel {
     public func buttonPressed() {
-        requestStatus = "Taken"
-        reference.child("Requests").child(String(requestID!)).child("Status").setValue(requestStatus as! String)
+        guard let userRequest = userRequest else { return }
+        userRequest.status = "Taken"
+        guard let userRequestId = userRequest.id else { return }
+        reference.child("Requests").child(String(userRequestId)).child("Status").setValue(userRequest.status)
     }
 }
 

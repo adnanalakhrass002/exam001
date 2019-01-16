@@ -17,6 +17,7 @@ enum Request: String {
     case json
 }
 
+//unused
 struct Data: Codable {
     var slideshow: SlideShow
 }
@@ -33,6 +34,7 @@ struct Slide: Codable {
     var title: String
     var type: String
 }
+//unused end
 
 class fireBaseViewModel: NSObject {
     
@@ -54,9 +56,7 @@ class fireBaseViewModel: NSObject {
         referenceCellCountFunc = Database.database().reference()
     }
     
-    override init() {
-        
-    }
+    override init() {}
     
     func getTodayString() -> String{
         

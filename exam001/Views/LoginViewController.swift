@@ -19,6 +19,12 @@ class LoginViewController: UIViewController {
         static let alamoButtonTopAnchor: CGFloat = 20.0
     }
     
+    private lazy var androidTextField: AndroidTextField! = {
+        let androidTextField = AndroidTextField(withPlaceholder: "this should go up", themeColor: .orange, 15.0)
+        androidTextField.delegate = self
+        return androidTextField
+    }()
+    
     private lazy var firstTextField: CustomTextField! = {
         let firstTextField = CustomTextField(fieldPlaceHolder: "User Name OR request type (post/get/delete/json)", fieldColor: .orange, fieldBorderStyle: .line)
         return firstTextField
@@ -37,6 +43,7 @@ class LoginViewController: UIViewController {
         Button.layer.borderWidth = 1
         Button.layer.borderColor = UIColor.orange.cgColor
         Button.clipsToBounds = true
+        Button.delegate = self
         return Button
     }()
     
@@ -56,20 +63,22 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         setupSubViews()
         fireBaseModel = fireBaseViewModel(self)
+        Button.title = "Updated"
     }
     
     func setupSubViews() {
         view.backgroundColor = .darkGray
-        
         setupFirstTextField()
         setupSecondTextField()
         setupButton()
         setupAlamoButton()
+        
+        setupAndroidTextField()
     }
 
     func setupFirstTextField() {
         view.addSubview(firstTextField)
-        seupFirstFieldConstraints()
+        setupFirstFieldConstraints()
         
     }
 
@@ -87,8 +96,12 @@ class LoginViewController: UIViewController {
         view.addSubview(alamoButton)
         setupAlamoButtonConstraints()
     }
+    func setupAndroidTextField() {
+        view.addSubview(androidTextField)
+        setupAndroidTextFieldConstrants()
+    }
 
-    func seupFirstFieldConstraints() {
+    func setupFirstFieldConstraints() {
         firstTextField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             firstTextField.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
@@ -124,6 +137,16 @@ class LoginViewController: UIViewController {
             ])
     }
     
+    func setupAndroidTextFieldConstrants() {
+        androidTextField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            androidTextField.bottomAnchor.constraint(equalTo:firstTextField.topAnchor),
+            androidTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant:Config.subViewHorizontalAnchor),
+            androidTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant:Config.subViewHorizontalAnchor),
+            androidTextField.heightAnchor.constraint(equalToConstant: 50)
+            ])
+    }
+    
 }
 
 extension LoginViewController {
@@ -143,7 +166,8 @@ extension LoginViewController {
                     Auth.auth().createUser(withEmail: self.firstTextField.text!, password: self.secondTextField.text!) { (authResult, error) in
                         // ...
                         if error == nil {
-                            guard let user = authResult?.user else { return }
+                            guard let result = authResult else { return }
+                            let user = result.user
                             let vc = ViewController()
                             let nc = UINavigationController(rootViewController: vc)
                             UIApplication.shared.keyWindow?.rootViewController = nc
@@ -168,8 +192,7 @@ extension LoginViewController {
     @objc func Request() {
         if firstTextField.text != nil {
             fireBaseModel.performRequest(firstTextField.text!)
-        }
-        else {
+        } else {
             print("no request value entered")
         }
     }
@@ -182,5 +205,24 @@ extension LoginViewController: FireBaseModelDelegate {
         self.fireBaseModel = fireviewModel
     }
 
+    
+}
+
+extension LoginViewController: SampleButtonDelegate {
+    func sampleButtonDidSetTitle(_ sampleButton: SampleButton) {
+        print("did set title")
+        sampleButton.backgroundColor = .blue
+    }
+}
+
+extension LoginViewController: AndroidTextFieldDelegate {
+    func androidTextFieldDidBeginEditing(_ androidTextField: AndroidTextField) {
+        androidTextField.animateLabelPosition()
+    }
+    
+    func androidTextFieldDidEndEditing(_ androidTextField: AndroidTextField) {
+        androidTextField.resetLabelPosition()
+    }
+    
     
 }

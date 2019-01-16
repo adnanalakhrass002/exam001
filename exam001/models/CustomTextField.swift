@@ -15,21 +15,13 @@ class CustomTextField: UITextField {
     private var xPadding:CGFloat?
     private var yPadding: CGFloat?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     convenience init (fieldPlaceHolder: String, fieldColor: UIColor, fieldBorderStyle: UITextField.BorderStyle, xPad: CGFloat? = 10, ypad: CGFloat? = 10) {
         self.init()
-        self.fPlaceHolder = fieldPlaceHolder
-        self.fColor = fieldColor
-        self.fBorder = fieldBorderStyle
-        self.xPadding = xPad
-        self.yPadding = ypad
+        fPlaceHolder = fieldPlaceHolder
+        fColor = fieldColor
+        fBorder = fieldBorderStyle
+        xPadding = xPad
+        yPadding = ypad
         setupField()
     }
     
@@ -48,5 +40,10 @@ class CustomTextField: UITextField {
     // text position
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.insetBy(dx: xPadding!, dy: yPadding!)
+    }
+    
+    public func changetextcolor(_ color: UIColor?){
+        guard let color = color else { return }
+        self.textColor = color
     }
 }

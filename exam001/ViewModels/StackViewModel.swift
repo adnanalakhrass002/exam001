@@ -8,25 +8,45 @@
 
 import UIKit
 
+protocol StackViewModelDelegate: class {
+    //write delegate whenever you update data in a viewmodel
+    func stackViewModelDidSetDataSourceArray(_ stackViewModel: StackViewModel)
+    func stackViewModelDidSetTableContentArray(_ stackViewModel: StackViewModel)
+    func stackViewModelDidSetDataArray(_ stackViewModel: StackViewModel)
+}
+
 class StackViewModel: NSObject {
     
-    weak var delegate: ViewModelDelegate!
-    private var dataSourceArray = [String]()
+    private var dataSourceArray: [String]? {
+        didSet {
+            stackViewModelDelegate?.stackViewModelDidSetDataSourceArray(self)
+        }
+    }
     
-    public var tableContentArray = [String]()
+    public var tableContentArray: [String]? {
+        didSet {
+            stackViewModelDelegate?.stackViewModelDidSetTableContentArray(self)
+        }
+    }
+    
+    private var targetViewController: ViewController?
+    weak var delegate: ViewModelDelegate!
+    weak var stackViewModelDelegate: StackViewModelDelegate?
 
     // MARK: - Attributes
     var fieldsArray: [String] = ["Full name", "floor", "where do you want items from?", "what do you want?"]
     
     var dataArray: [Requestes] = [] {
         didSet {
-            delegate.didUpdateData()
+            guard let targetViewController = targetViewController else { return }
+            delegate.viewControllerDidUpdateData(targetViewController)
             self.update()
         }
     }
     
-    init(_ delegate: ViewModelDelegate) {
-        self.delegate = delegate
+    init(_ targetViewController: ViewController) {
+        self.targetViewController = targetViewController
+        self.delegate = targetViewController
     }
 
     override init() {

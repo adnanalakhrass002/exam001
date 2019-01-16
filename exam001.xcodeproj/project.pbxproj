@@ -17,6 +17,7 @@
 		96B9239121942218009199B9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 96B9238F21942218009199B9 /* LaunchScreen.storyboard */; };
 		96B9239C21942218009199B9 /* exam001Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B9239B21942218009199B9 /* exam001Tests.swift */; };
 		96B923A721942218009199B9 /* exam001UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B923A621942218009199B9 /* exam001UITests.swift */; };
+		B11F5D2121DD14EA0055BE1E /* UserRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11F5D2021DD14EA0055BE1E /* UserRequest.swift */; };
 		B155595C2199829A007D679C /* StackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155595B2199829A007D679C /* StackViewModel.swift */; };
 		B155595E21998336007D679C /* SampleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155595D21998336007D679C /* SampleButton.swift */; };
 		B15559602199865E007D679C /* ViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155595F2199865E007D679C /* ViewModelDelegate.swift */; };
@@ -32,7 +33,8 @@
 		B155597721A2BE40007D679C /* RequestDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155597621A2BE40007D679C /* RequestDetailsViewController.swift */; };
 		B155597B21AAE706007D679C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155597A21AAE706007D679C /* LoginViewController.swift */; };
 		B155597D21AD7FE6007D679C /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155597C21AD7FE6007D679C /* DetailViewModel.swift */; };
-		B155598321AE7666007D679C /* DetailsModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155598221AE7666007D679C /* DetailsModelDelegate.swift */; };
+		B155598321AE7666007D679C /* DetailsViewControllerViewModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B155598221AE7666007D679C /* DetailsViewControllerViewModelDelegate.swift */; };
+		B15B0FCD21E6066B005D8FD4 /* AndroidTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15B0FCC21E6066B005D8FD4 /* AndroidTextField.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +74,7 @@
 		96B923A821942218009199B9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		984ABB83AE0ADD7F55600788 /* Pods-exam001UITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-exam001UITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-exam001UITests/Pods-exam001UITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9D2671BFA6BE879C354E69A5 /* Pods-exam001UITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-exam001UITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-exam001UITests/Pods-exam001UITests.release.xcconfig"; sourceTree = "<group>"; };
+		B11F5D2021DD14EA0055BE1E /* UserRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRequest.swift; sourceTree = "<group>"; };
 		B155595B2199829A007D679C /* StackViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewModel.swift; sourceTree = "<group>"; };
 		B155595D21998336007D679C /* SampleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleButton.swift; sourceTree = "<group>"; };
 		B155595F2199865E007D679C /* ViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelDelegate.swift; sourceTree = "<group>"; };
@@ -85,8 +88,8 @@
 		B155597621A2BE40007D679C /* RequestDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestDetailsViewController.swift; sourceTree = "<group>"; };
 		B155597A21AAE706007D679C /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		B155597C21AD7FE6007D679C /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
-		B155598221AE7666007D679C /* DetailsModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsModelDelegate.swift; sourceTree = "<group>"; };
-		B155598421C0F73A007D679C /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B155598221AE7666007D679C /* DetailsViewControllerViewModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewControllerViewModelDelegate.swift; sourceTree = "<group>"; };
+		B15B0FCC21E6066B005D8FD4 /* AndroidTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidTextField.swift; sourceTree = "<group>"; };
 		C730745F3B286DC38FD4B045 /* Pods_exam001Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_exam001Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1FF61DF11A11D96EDEB065E /* Pods-exam001.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-exam001.debug.xcconfig"; path = "Pods/Target Support Files/Pods-exam001/Pods-exam001.debug.xcconfig"; sourceTree = "<group>"; };
 		F0388D4124555641CE41EAE1 /* Pods-exam001Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-exam001Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-exam001Tests/Pods-exam001Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -136,7 +139,6 @@
 		948300728DAE4DF9199E18C8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B155598421C0F73A007D679C /* Alamofire.framework */,
 				1B64D073F81230E2630D27E0 /* Pods_exam001.framework */,
 				C730745F3B286DC38FD4B045 /* Pods_exam001Tests.framework */,
 				3B170726009E7D1F05E298D5 /* Pods_exam001UITests.framework */,
@@ -237,6 +239,8 @@
 				B155596121998ADB007D679C /* CustomStack.swift */,
 				B155595D21998336007D679C /* SampleButton.swift */,
 				B155596321998B2D007D679C /* CustomTextField.swift */,
+				B11F5D2021DD14EA0055BE1E /* UserRequest.swift */,
+				B15B0FCC21E6066B005D8FD4 /* AndroidTextField.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -244,7 +248,7 @@
 		B155598121AD9229007D679C /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
-				B155598221AE7666007D679C /* DetailsModelDelegate.swift */,
+				B155598221AE7666007D679C /* DetailsViewControllerViewModelDelegate.swift */,
 				B155595F2199865E007D679C /* ViewModelDelegate.swift */,
 				B155597021A295E7007D679C /* FireBaseModelDelegate.swift */,
 			);
@@ -416,7 +420,6 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-exam001/Pods-exam001-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
@@ -426,7 +429,6 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
@@ -489,9 +491,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B155597121A295E7007D679C /* FireBaseModelDelegate.swift in Sources */,
+				B15B0FCD21E6066B005D8FD4 /* AndroidTextField.swift in Sources */,
 				B155596421998B2D007D679C /* CustomTextField.swift in Sources */,
-				B155598321AE7666007D679C /* DetailsModelDelegate.swift in Sources */,
+				B155598321AE7666007D679C /* DetailsViewControllerViewModelDelegate.swift in Sources */,
 				B155595C2199829A007D679C /* StackViewModel.swift in Sources */,
+				B11F5D2121DD14EA0055BE1E /* UserRequest.swift in Sources */,
 				96B9238921942218009199B9 /* ViewController.swift in Sources */,
 				B1555969219C025E007D679C /* scrollView sampleguide.swift in Sources */,
 				96B9238721942218009199B9 /* AppDelegate.swift in Sources */,
